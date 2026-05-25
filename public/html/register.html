@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jal Vihar – Registration</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+    #title {
+        padding: 15px 15px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .form-box {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        border: none;
+    }
+    
+    .required-field::after {
+        content: " *";
+        color: #dc3545;
+        font-weight: 700;
+    } 
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        input, select {
+            font-size: 0.85rem !important;
+        }
+    </style>
+    
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark">
+    <div class="container-fluid">
+        <span class="navbar-brand">🗒️ Pensioner Grievance Redressal System</span>
+        <span class="navbar-subtitle" style="color: aliceblue;">Pensioner Grievance Redressal System</span>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center" id="title">
+    <div class="col-lg-10 col-xl-9">
+    <div class="form-box shadow rounded text-center" >
+        Pensioner Registration
+    </div>
+    </div>
+    </div>
+    <div class="row justify-content-center">
+    <div class="col-lg-10 col-xl-9">
+    <div class="form-box shadow-sm rounded">
+
+        <form id="registerForm">
+
+            <div class="row g-3">
+
+                <!-- REQUIRED FIELDS -->
+                <div class="col-md-4">
+                    <label class="required-field">Pension Code</label>
+                    <input type="text" id="pensioncode" class="form-control" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="required-field">Pensioner Name</label>
+                    <input type="text" id="employee_name" class="form-control" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="required-field">Password</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+
+                <!-- PERSONAL INFO -->
+                <div class="col-md-4">
+                    <label>Mobile Number</label>
+                    <input type="text" id="mobile" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Email</label>
+                    <input type="email" id="email" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Gender</label>
+                    <select id="gender" class="form-select">
+                        <option value="">Select</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label>Date of Birth</label>
+                    <input type="date" id="dob" class="form-control">
+                </div>
+
+                <!-- JOB INFO -->
+                <div class="col-md-4">
+                    <label>Payroll Type</label>
+                    <input type="text" id="payroll_type" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Category</label>
+                    <input type="text" id="category" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Designation ID</label>
+                    <input type="number" id="designation_id" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Date of Joining</label>
+                    <input type="date" id="doj" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Date of Retirement</label>
+                    <input type="date" id="dor" class="form-control">
+                </div>
+
+                <!-- BANK INFO -->
+                <div class="col-md-4">
+                    <label>PAN Number</label>
+                    <input type="text" id="pan_number" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Bank Name</label>
+                    <input type="text" id="bank_name" class="form-control">
+                </div>
+
+                <div class="col-md-4">
+                    <label>Account Number</label>
+                    <input type="text" id="account_number" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label>Address:</label>
+                    <input type="text" id="address" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Basic Pension</label>
+                    <input type="text" id="basic_pension" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label>Dearness Allowance (DA)</label>
+                    <input type="text" id="dearness_allowance" class="form-control">
+                </div>
+
+                <div class="col-md-12 text-center mt-3">
+                    <button class="btn btn-primary px-5">
+                        Register
+                    </button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+// Loading Helper Functions
+function showLoading(text = "Loading...") {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    document.querySelector('.loading-text').innerText = text;
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+document.getElementById("registerForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const payload = {
+        pensioncode: pensioncode.value,
+        employee_name: employee_name.value,
+        password: password.value,
+        payroll_type: payroll_type.value,
+        category: category.value,
+        designation_id: designation_id.value,
+        pan_number: pan_number.value,
+        bank_name: bank_name.value,
+        account_number: account_number.value,
+        mobile: mobile.value,
+        dob: dob.value,
+        gender: gender.value,
+        email: email.value,
+        doj: doj.value,
+        dor: dor.value,
+        address: address.value,
+        basic_pension: basic_pension.value,
+        dearness_allowance: dearness_allowance.value
+    };
+
+    try {
+        const res = await fetch("http://localhost:3000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            showToast(data.message, 'error');
+            return;
+        }
+
+        alert("Registration successful. You can now login.");
+        window.location.href = "login.html";
+
+    } catch (err) {
+        console.error(err);
+        alert("Server not reachable. Is Node running?");
+    }
+});
+// Dark Mode Toggle
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    
+    // Update button text
+    const btn = document.querySelector('.dark-mode-toggle');
+    btn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+
+// Load dark mode preference on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        const btn = document.querySelector('.dark-mode-toggle');
+        if (btn) btn.innerHTML = '☀️ Light Mode';
+    }
+});
+
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toastContainer');
+    
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+</script>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">
+    🌙 Dark Mode
+</button>
+</body>
+</html>
+

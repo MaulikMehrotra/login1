@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>feedback</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="style.css">
+     <style>
+        body {
+            background-color: #054379;
+        }
+
+        .section-header {
+            background-color: #d9edf7;
+            padding: 10px;
+            font-weight: 600;
+            border: 1px solid #bce8f1;
+        }
+
+        .form-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        input, select {
+            font-size: 0.85rem !important;
+        }
+    </style> 
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark" style="background: linear-gradient(90deg, #7556ff, #00bcd4);">
+    <div class="container-fluid">
+        <span class="navbar-brand">🗒️ Pensioner Grievance Redressal System</span>
+        <span class="navbar-subtitle" style="color: aliceblue;">Pensioner Grievance Redressal System</span>
+    </div>
+</nav>
+
+<div class="container-fluid mt-4" id="box">
+
+    <!-- SECTION HEADER -->
+    <div class="section-header" style=" text-align: right;">
+        Pension Information
+    </div>
+
+    <!-- FORM BOX -->
+    <div class="form-box">
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <label>Pensioner Code</label>
+                <input type="text" class="form-control" id="pensioncode" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Pensioner Name</label>
+                <input type="text" class="form-control" id="employee_name" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Mobile Number</label>
+                <input type="text" class="form-control" id="mobile" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Designation</label>
+                <input type="text" class="form-control" id="designation_id" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Date of Birth</label>
+                <input type="text" class="form-control" id="dob" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Retirement Date</label>
+                <input type="text" class="form-control" id="dor" readonly>
+            </div>
+
+            <div class="col-md-6">
+                <label>Office Name</label>
+                <input type="text" class="form-control"
+                       id="address" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Basic Pension</label>
+                <input type="text" class="form-control" id="pension" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Dearness Allowance (DA)</label>
+                <input type="text" class="form-control col-md-6" id="da"  readonly>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- NEXT SECTION -->
+    <div class="section-header mt-4" style="text-align: right;">
+        Submit Your Complaint
+    </div>
+
+    <div class="form-box">
+
+        <div class="row g-3">
+        
+            <div class="col-md-4">
+                <label>Assign To</label>
+                <select class="form-select" id="assign_to">
+                    <option value="">Select Officer</option>
+                    <option value="FINANCE">Finance</option>
+                    <option value="ACCOUNTS">Accounts</option>
+                    <option value="IT">IT</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label>Category</label>
+                <select class="form-select" id="category">
+                    <option value="">Select Option</option>
+                    <option>Remaining Due</option>
+                    <option>Pension Revision</option>
+                    <option>Dearness Allowance Issue</option>
+                    <option>Arrears Not Credited</option>
+                    <option>Bank Account Problem</option>
+                    <option>Incorrect Pension Amount</option>
+                    <option>Life Certificate Issue</option>
+                    <option>Delay in Payment</option>
+                    <option>Technical Portal Issue</option>
+                    <option>Other</option>
+                </select>
+
+            </div>
+
+
+            <div class="col-md-12">
+                <label>Description</label>
+                <textarea class="form-control" rows="3" id="description"></textarea>
+            </div>
+
+            <div class="col-md-12 text-end">
+                <button class="btn btn-primary" id="submitTicket">Submit Problem</button>
+            </div>
+                <div class="action-links mt-4 text-center">
+    <a href="check.html" class="btn btn-outline-primary">
+        📊 Check Ticket Status
+    </a>
+    <a href="userfeedback.html" class="btn btn-outline-secondary">
+        💬 Submit Feedback
+    </a>
+</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">
+    🌙 Dark Mode
+</button>
+</body>
+<script>
+    // Loading Helper Functions
+function showLoading(text = "Loading...") {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    document.querySelector('.loading-text').innerText = text;
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+document.addEventListener("DOMContentLoaded", async () => {
+
+    // 1. Check login
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !user.pensioncode) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        // 2. Fetch full user details from backend
+        const res = await fetch(
+            `http://localhost:3000/user/${user.pensioncode}`
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.message || "Failed to load user data");
+            return;
+        }
+
+        // 3. Auto-fill fields
+        document.getElementById("pensioncode").value = data.pensioncode || "";
+        document.getElementById("employee_name").value = data.employee_name || "";
+        document.getElementById("mobile").value = data.mobile || "";
+        document.getElementById("designation_id").value = data.designation_id || "";
+        document.getElementById("dob").value = data.dob || "";
+        document.getElementById("dor").value = data.dor || "";
+        document.getElementById("address").value = data.address || "";
+        document.getElementById("pension").value = data.basic_pension || "";
+        document.getElementById("da").value = data.dearness_allowance || "";
+
+    } catch (err) {
+        console.error(err);
+        alert("Server not reachable");
+    }
+});
+document.getElementById("submitTicket").addEventListener("click", async () => {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) {
+        alert("Please login first");
+        return;
+    }
+
+    const category = document.getElementById("category").value;
+    const assigned_to = document.getElementById("assign_to").value;
+    const description = document.getElementById("description").value;
+
+    if (!description) {
+        alert("Enter problem description");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:3000/tickets", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                pensioncode: user.pensioncode,
+                category,
+                assigned_to,
+                description
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.message);
+            return;
+        }
+
+        alert("Ticket Created! Ticket No: " + data.ticket_id);
+
+        document.getElementById("description").value = "";
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error");
+    }
+});
+// Dark Mode Toggle
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    
+    // Update button text
+    const btn = document.querySelector('.dark-mode-toggle');
+    btn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+
+// Load dark mode preference on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        const btn = document.querySelector('.dark-mode-toggle');
+        if (btn) btn.innerHTML = '☀️ Light Mode';
+    }
+});
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toastContainer');
+    
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+</script>
+
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 450px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    overflow: hidden;
+}
+
+.login-header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.login-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.login-header p {
+    margin: 8px 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.login-body {
+    padding: 40px 35px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+}
+
+.btn-login {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border: none;
+    color: white;
+    padding: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(42, 82, 152, 0.4);
+}
+
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.register-link a {
+    color: #2a5298;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}
+
+.captcha-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+.navbar-brand-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-subtitle {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.8);
+    margin-top: -5px;
+    letter-spacing: 0.5px;
+}
+
+.navbar-toggler {
+    border-color: rgba(255,255,255,0.5);
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.85)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+</style>
+ <body>
+    <!-- <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">🗒️ Pensioner Grievance Redressal System</a>
+            <span class="navbar-subtitle" style="color: aliceblue;">Pensioner Grievance Redressal System</span>
+        </div>
+    </nav>    
+    <div class="d-flex justify-content-center align-items-center min-vh-100" id="cardy">
+       
+        <div class="card shadow-lg" style="width: 22rem;">
+            <div class="card-header text-center fw-bold">
+                Login
+            </div>
+
+            <div class="card-body">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Pension Code:</label>
+                        <input type="text" id="pensioncode" class="form-control" placeholder="Enter your pension code" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password:</label>
+                        <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                    </div>
+
+                   
+                    <div class="mb-3">
+                        <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    <a href="register.html" style="padding-left: 25%;">New here? Register</a>
+                    
+                </form>
+            </div>
+        </div>
+    </div> -->
+    <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <div class="navbar-brand-wrapper">
+            <a class="navbar-brand" href="feedback.html">
+                📋 PGRS
+            </a>
+            <span class="navbar-subtitle">Pensioner Grievance Redressal System</span>
+        </div>
+        <button class="navbar-toggler" type="button" 
+                data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+    </div>
+</nav>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>📋 PGRS</h1>
+                <p>Pensioner Grievance Redressal System</p>
+            </div>
+            <div class="login-body">
+                <form id="loginForm">
+                    <!-- Keep your existing form fields -->
+                    <div class="mb-3">
+                        <label class="form-label">Pension Code</label>
+                        <input type="text" id="pensioncode" 
+                               class="form-control" 
+                               placeholder="Enter your pension code" 
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="password" 
+                               class="form-control" 
+                               placeholder="Enter your password" 
+                               required>
+                    </div>
+
+                    <div class="captcha-container">
+                        <div class="g-recaptcha" 
+                             data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-login w-100">
+                        Login to Dashboard
+                    </button>
+                    
+                    <div class="register-link">
+                        <span class="text-muted">New to PGRS?</span>
+                        <a href="register.html">Create Account</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Loading Helper Functions
+function showLoading(text = "Loading...") {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    document.querySelector('.loading-text').innerText = text;
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const ehrms = document.getElementById("pensioncode").value;
+            const password = document.getElementById("password").value;
+            const captchaResponse = grecaptcha.getResponse();
+
+            if (!ehrms || !password) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            if (!captchaResponse) {
+                alert("Please complete the CAPTCHA");
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                   body: JSON.stringify({ 
+                    pensioncode: ehrms,  
+                    password: password, 
+                    captcha: captchaResponse 
+                })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showToast(data.message, 'Login Failed');
+                    grecaptcha.reset();
+                    return;
+                }
+
+                showToast("Login successful!", 'success');
+                // Store user data if needed
+                if (data.user) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                }
+                
+                // Redirect to dashboard or feedback page
+                if (
+                    data.user.role === "FINANCE" ||
+                    data.user.role === "ACCOUNTS" ||
+                    data.user.role === "IT"
+                ) {
+                    window.location.href = "financeofficer1.html";
+                } else {
+                    window.location.href = "feedback.html";
+                }
+            } catch(err) {
+                console.error("Fetch Error:", err);
+                alert("Serveice not availabe. Please try again later.");
+                grecaptcha.reset();
+            }
+        });
+        // Dark Mode Toggle
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    
+    // Update button text
+    const btn = document.querySelector('.dark-mode-toggle');
+    btn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+
+// Load dark mode preference on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        const btn = document.querySelector('.dark-mode-toggle');
+        if (btn) btn.innerHTML = '☀️ Light Mode';
+    }
+});
+
+//error
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toastContainer');
+    
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+
+    </script>
+    <!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">
+    🌙 Dark Mode
+</button>
+</body>
+</html> 
+

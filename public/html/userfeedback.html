@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            
+            <a class="navbar-brand" href="#">🗒️ Pensioner Grievance Redressal System</a>
+            <span class="navbar-subtitle" style="color: aliceblue;">Pensioner Grievance Redressal System</span>
+            <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link" aria-current="true" href="#">Features</a>
+                    <a class="nav-link" aria-current="true" href="#">Pricing</a>
+                    <a class="nav-link" aria-current="true">Disabled</a>
+                </div>
+            </div> -->
+        </div>
+    </nav>
+    <div class="section-header mt-4 mx-4">
+    Share Your Feedback
+</div>
+
+<div class="form-box mx-4">
+    <div class="row g-3 justify-content-center">
+
+        
+
+        <div class="col-md-4">
+            <label>Pensioner code</label>
+            <input type="text" class="form-control" id="pensioncode">
+        </div>
+
+        <div class="col-md-4">
+            <label>Token Number</label>
+            <select class="form-select" id="token">
+                <option value="">Loading tickets...</option>
+            </select>
+        </div>
+
+        <div class="col-md-12">
+            <label>Message</label>
+            <textarea class="form-control" rows="4" id="message"></textarea>
+        </div>
+
+        <div class="col-md-12 text-end">
+            <button class="btn btn-primary" id="sendfeedback" type="button">
+                Submit Feedback
+            </button>
+        </div>
+
+    </div>
+</div>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">
+    🌙 Dark Mode
+</button>
+</body>
+<script>
+    // Loading Helper Functions
+function showLoading(text = "Loading...") {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    document.querySelector('.loading-text').innerText = text;
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+    async function loadUserTickets() {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user) return;
+
+    const res = await fetch(`http://localhost:3000/user-tickets/${user.pensioncode}`);
+    const tickets = await res.json();
+
+    const dropdown = document.getElementById("token");
+    dropdown.innerHTML = "";
+
+    if (tickets.length === 0) {
+        dropdown.innerHTML = `<option value="">No tickets found</option>`;
+        return;
+    }
+
+    tickets.forEach(t => {
+        dropdown.innerHTML += `
+            <option value="${t.ticket_id}">
+                #${t.ticket_id} - ${t.category} (${t.status})
+            </option>
+        `;
+    });
+}
+document.getElementById("sendfeedback").addEventListener("click", async () => {
+
+    const pensioncode = document.getElementById("pensioncode").value;
+    const token = document.getElementById("token").value;
+    const message = document.querySelector("textarea").value;
+
+    if (!pensioncode || !message || !token) {
+        alert("Fill required fields");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:3000/feedback", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                pensioncode,
+                token,
+                message
+            })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.message);
+            return;
+        }
+
+        alert("Feedback submitted! ID: " + data.feedback_id);
+
+        document.querySelector("textarea").value = "";
+
+    } catch (err) {
+        console.error(err);
+        alert("Server error");
+    }
+});
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (user) {
+    document.getElementById("pensioncode").value = user.pensioncode;
+    loadUserTickets();
+}
+// Dark Mode Toggle
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    
+    // Update button text
+    const btn = document.querySelector('.dark-mode-toggle');
+    btn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+
+// Load dark mode preference on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        const btn = document.querySelector('.dark-mode-toggle');
+        if (btn) btn.innerHTML = '☀️ Light Mode';
+    }
+});
+
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toastContainer');
+    
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+    toast.innerHTML = `<span>${message}</span>`;
+    
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+</script>
+</html>

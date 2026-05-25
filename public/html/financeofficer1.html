@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pension–Grievance</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <!-- ADD THIS -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>  <!-- ADD THIS FOR EXCEL -->
+     <style>
+        body {
+            background-color: #054379;
+        }
+
+        .section-header {
+            background-color: #d9edf7;
+            padding: 10px;
+            font-weight: 600;
+            border: 1px solid #bce8f1;
+        }
+
+        .form-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        input, select {
+            font-size: 0.85rem !important;
+        }
+        .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 15px;
+}
+
+.pagination button {
+    padding: 5px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.pagination button:hover {
+    background: #054379;
+    color: white;
+}
+
+.pagination button.active {
+    background: #054379;
+    color: white;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+    </style> 
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark
+">
+    <div class="container-fluid">
+        <span class="navbar-brand">🗒️ Pensioner Grievance Redressal System</span>
+        <span class="navbar-subtitle" style="color: aliceblue;">Pensioner Grievance Redressal System</span>
+    </div>
+</nav>
+
+
+<div class="section-header mt-4 mx-4">Ticket Dashboard</div>
+
+<div class="form-box mx-4">
+
+    <!-- COUNTS -->
+    <div class="row text-center mb-3">
+
+        <div class="col-md-3">
+            <div class="stats-card stat-pending">
+             <h6>Pending</h6>
+             <h4 id="pendingCount" class="text-warning">0</h4>
+        </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stats-card stat-progress">
+            <h6>In Progress</h6>
+            <h4 id="progressCount" class="text-primary">0</h4>
+        </div>
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="stats-card stat-resolved">
+            <h6>Resolved</h6>
+            <h4 id="resolvedCount" class="text-success">0</h4>
+        </div>
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="stats-card stat-total">
+            <h6>Total</h6>
+            <h4 id="totalCount" class="text-secondary">0</h4>
+        </div>
+        </div>
+    </div>
+
+    <!-- COLLAPSIBLE LIST -->
+    <div class="accordion" id="ticketAccordion">
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#pendingBox">
+                    Pending Tickets
+                </button>
+            </h2>
+            <div id="pendingBox" class="accordion-collapse collapse show">
+                <div class="accordion-body" id="pendingList"></div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#progressBox">
+                    In Progress
+                </button>
+            </h2>
+            <div id="progressBox" class="accordion-collapse collapse">
+                <div class="accordion-body" id="progressList"></div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#resolvedBox">
+                    Resolved
+                </button>
+            </h2>
+            <div id="resolvedBox" class="accordion-collapse collapse">
+                <div class="accordion-body" id="resolvedList"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="section-header mt-4 mx-4">
+    Feedback Dashboard
+</div>
+
+<div class="form-box mx-4">
+    <div class="row text-center">
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h6>😊 Positive</h6>
+                <h3 id="positiveCount">0</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h6>😐 Neutral</h6>
+                <h3 id="neutralCount">0</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h6>😡 Negative</h6>
+                <h3 id="negativeCount">0</h3>
+            </div>
+        </div>
+
+    </div>
+</div>
+    <div class="section-header mt-4 mx-4">
+    Analytics Overview
+    <button class="btn btn-success btn-sm float-end" id="exportBtn">
+        📥 Export to Excel
+    </button>
+</div>
+
+<div class="form-box mx-4">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <canvas id="statusChart"></canvas>
+        </div>
+        <div class="col-md-6 mb-4">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+<div class="container-fluid mt-4" id="box">
+
+    <!-- SECTION HEADER -->
+    <div class="section-header mx-4" style=" text-align: right;">
+        Pension Information
+    </div>
+
+    <!-- FORM BOX -->
+    <div class="form-box mx-4">
+
+        <div class="row g-3"> 
+
+            <div class="col-md-3">
+                <label>Pensioner Code</label>
+                <input type="text" class="form-control" id="pensioncode" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Pensioner Name</label>
+                <input type="text" class="form-control" id="employee_name" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Mobile Number</label>
+                <input type="text" class="form-control" id="mobile" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Designation</label>
+                <input type="text" class="form-control" id="designation_id" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Date of Birth</label>
+                <input type="text" class="form-control" id="dob" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Retirement Date</label>
+                <input type="text" class="form-control" id="dor" readonly>
+            </div>
+
+            <div class="col-md-6">
+                <label>Office Name</label>
+                <input type="text" class="form-control"
+                       id="address" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Basic Pension</label>
+                <input type="text" class="form-control" id="pension" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label>Dearness Allowance (DA)</label>
+                <input type="text" class="form-control col-md-6" id="da"  readonly>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="section-header mt-4 mx-4">
+    User Complaint / Feedback
+    </div>
+
+<div class="form-box mx-4">
+    <div class="form-box mx-4">
+    <div id="user_message" class="p-3" style="background:#f8f9fa; border-radius:5px;"></div>
+    </div>
+</div>
+    <!-- NEXT SECTION -->
+    <div class="section-header mt-4 mx-4">
+    Update & Message User
+    </div>
+
+    <div class="form-box mx-4">
+        <div class="row">
+           <!-- <div class="section-header mt-4 mx-4">
+            Update & Message User
+            </div> -->
+
+    <div class="form-box">
+        <div class="row g-3">
+
+            <div class="col-md-4">
+                <label>Pensioner Code</label>
+                <input type="text" class="form-control" id="msg_pensioncode" readonly>
+            </div>
+
+            <div class="col-md-4">
+                <label>Token Number</label>
+                <input type="text" class="form-control" id="msg_token" readonly>
+            </div>
+
+            <div class="col-md-4">
+                <label>Update Status</label>
+                <select class="form-select" id="new_status">
+                    <option value="">Select</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="IN_PROGRESS">In Progress</option>
+                    <option value="RESOLVED">Resolved</option>
+                </select>
+            </div>
+
+            <div class="col-md-12">
+                <label>Message</label>
+                <textarea class="form-control" rows="4" id="msg_text"></textarea>
+            </div>
+
+            <div class="col-md-12 text-end">
+                <button class="btn btn-primary" id="sendMessageBtn">
+                    Send Message
+                </button>
+
+                <button class="btn btn-warning ms-2" id="updateStatusBtn">
+                    Update Status
+                </button>
+            </div>
+
+        </div>
+    </div>
+    </div>
+    </div>
+
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay" style="display:none;">
+    <div class="spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+
+<!-- Dark Mode Toggle -->
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">
+    🌙 Dark Mode
+</button>
+</body>
+
+
+<script>
+    // Loading Helper Functions
+function showLoading(text = "Loading...") {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+    document.querySelector('.loading-text').innerText = text;
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+    document.addEventListener("DOMContentLoaded", async () => {
+    loadFeedbackStats();
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const res = await fetch(`http://localhost:3000/tickets/${user.role}`);
+    const tickets = await res.json();
+
+    const pending = tickets.filter(t => t.status === "PENDING");
+    const progress = tickets.filter(t => t.status === "IN_PROGRESS");
+    const resolved = tickets.filter(t => t.status === "RESOLVED");
+   
+
+    // SET COUNTS
+    document.getElementById("pendingCount").innerText = pending.length;
+    document.getElementById("progressCount").innerText = progress.length;
+    document.getElementById("resolvedCount").innerText = resolved.length;
+    document.getElementById("totalCount").innerText = tickets.length;
+
+    // RENDER LISTS
+    renderList("pendingList", pending);
+    renderList("progressList", progress);
+    renderList("resolvedList", resolved);
+});
+
+
+// function renderList(elementId, tickets) {
+
+//     const container = document.getElementById(elementId);
+//     container.innerHTML = "";
+
+//     if (tickets.length === 0) {
+//         container.innerHTML = "<p>No tickets</p>";
+//         return;
+//     }
+
+//     tickets.forEach(t => {
+//         container.innerHTML += `
+//             <div class="list-group-item"
+//                  style="cursor:pointer"
+//                  onclick="loadTicket(${t.ticket_id})">
+//                 <strong>#${t.ticket_id}</strong> - ${t.category}
+//                 <span class="badge bg-secondary float-end">${t.status}</span>
+//             </div>
+//         `;
+//     });
+// }
+
+const ITEMS_PER_PAGE = 5;  // Show 5 tickets per page
+let currentPages = {
+    pending: 1,
+    progress: 1,
+    resolved: 1
+};
+
+function renderList(elementId, tickets, type) {
+    const container = document.getElementById(elementId);
+    container.innerHTML = "";
+
+    if (tickets.length === 0) {
+        container.innerHTML = "<p>No tickets</p>";
+        return;
+    }
+
+    // Pagination logic
+    const currentPage = currentPages[type];
+    const totalPages = Math.ceil(tickets.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const paginatedTickets = tickets.slice(startIndex, endIndex);
+
+    // Render tickets
+    paginatedTickets.forEach(t => {
+        container.innerHTML += `
+            <div class="list-group-item"
+                 style="cursor:pointer"
+                 onclick="loadTicket(${t.ticket_id})">
+                <strong>#${t.ticket_id}</strong> - ${t.category}
+                <span class="badge bg-secondary float-end">${t.status}</span>
+            </div>
+        `;
+    });
+
+    // Add pagination controls
+    if (totalPages > 1) {
+        let paginationHTML = '<div class="pagination">';
+        
+        // Previous button
+        paginationHTML += `
+            <button ${currentPage === 1 ? 'disabled' : ''} 
+                    onclick="changePage('${type}', ${currentPage - 1})">
+                ← Previous
+            </button>
+        `;
+        
+        // Page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHTML += `
+                <button class="${i === currentPage ? 'active' : ''}"
+                        onclick="changePage('${type}', ${i})">
+                    ${i}
+                </button>
+            `;
+        }
+        
+        // Next button
+        paginationHTML += `
+            <button ${currentPage === totalPages ? 'disabled' : ''}
+                    onclick="changePage('${type}', ${currentPage + 1})">
+                Next →
+            </button>
+        `;
+        
+        paginationHTML += '</div>';
+        container.innerHTML += paginationHTML;
+    }
+
+    // Show total count
+    container.innerHTML += `
+        <p class="text-muted mt-2 mb-0 text-center">
+            Showing ${startIndex + 1}-${Math.min(endIndex, tickets.length)} of ${tickets.length}
+        </p>
+    `;
+}
+
+function changePage(type, page) {
+    currentPages[type] = page;
+    location.reload();  // Simple approach - you can optimize this
+}
+
+
+
+async function loadTicket(ticketId) {
+
+    const res = await fetch(`http://localhost:3000/ticket/${ticketId}`);
+    const data = await res.json();
+    
+    document.getElementById("pensioncode").value = data.pensioncode;
+    document.getElementById("employee_name").value = data.employee_name;
+    document.getElementById("mobile").value = data.mobile;
+    document.getElementById("designation_id").value = data.designation_id;
+    document.getElementById("dob").value = data.dob;
+    document.getElementById("dor").value = data.dor;
+    document.getElementById("address").value = data.address;
+    document.getElementById("pension").value = data.basic_pension;
+    document.getElementById("da").value = data.dearness_allowance;
+    document.getElementById("msg_pensioncode").value = data.pensioncode;
+    document.getElementById("msg_token").value = data.ticket_id;
+    // document.getElementById("status").value = data.status;
+    document.getElementById("user_message").innerText = data.description;
+}
+
+document.getElementById("sendMessageBtn").addEventListener("click", async () => {
+
+    const pensioncode = document.getElementById("msg_pensioncode").value;
+    const ticket_id = document.getElementById("msg_token").value;
+    const message = document.getElementById("msg_text").value;
+    if (!ticket_id) {
+        alert("Select a ticket first");
+        return;
+    }
+    if (!message) {
+        alert("Enter message");
+        return;
+    }
+     // Confirmation
+    if (!confirm("Send this message to the user?")) {
+        return;
+    }
+
+    showLoading("Sending message...");
+    const res = await fetch("http://localhost:3000/messages", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ pensioncode, ticket_id, message })
+    });
+
+    const data = await res.json();
+
+    hideLoading();
+    alert(data.message);
+    document.getElementById("msg_text").value = "";
+});
+document.getElementById("updateStatusBtn").addEventListener("click", async () => {
+    const ticket_id = document.getElementById("msg_token").value;
+    const status = document.getElementById("new_status").value;
+
+    if (!ticket_id) {
+        alert("Select a ticket first");
+        return;
+    }
+
+    if (!status) {
+        alert("Select status");
+        return;
+    }
+
+    // Confirmation Dialog
+    if (!confirm(`Are you sure you want to update Ticket #${ticket_id} to ${status}?`)) {
+        return;
+    }
+
+    showLoading("Updating status...");
+
+    const res = await fetch(`http://localhost:3000/tickets/${ticket_id}/status`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ status })
+    });
+
+    const data = await res.json();
+
+    hideLoading();
+    alert(data.message);
+    location.reload();
+});
+async function loadFeedbackStats() {
+
+    const res = await fetch("http://localhost:3000/feedback-stats");
+    const data = await res.json();
+
+    let positive = 0, neutral = 0, negative = 0;
+
+    data.forEach(item => {
+        if (item.sentiment === "POSITIVE") positive = item.count;
+        if (item.sentiment === "NEUTRAL") neutral = item.count;
+        if (item.sentiment === "NEGATIVE") negative = item.count;
+    });
+
+    document.getElementById("positiveCount").innerText = positive;
+    document.getElementById("neutralCount").innerText = neutral;
+    document.getElementById("negativeCount").innerText = negative;
+}
+// ================= CHARTS =================
+async function loadCharts() {
+    // Status Pie Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'In Progress', 'Resolved'],
+            datasets: [{
+                data: [
+                    parseInt(document.getElementById('pendingCount').innerText) || 0,
+                    parseInt(document.getElementById('progressCount').innerText) || 0,
+                    parseInt(document.getElementById('resolvedCount').innerText) || 0
+                ],
+                backgroundColor: ['#ffc107', '#0d6efd', '#198754'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                title: {
+                    display: true,
+                    text: 'Ticket Status Distribution',
+                    font: { size: 16, weight: 'bold' }
+                }
+            }
+        }
+    });
+
+    // Category Bar Chart
+    try {
+        const res = await fetch('http://localhost:3000/ticket-categories');
+        const categories = await res.json();
+        
+        if (categories.length > 0) {
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: categories.map(c => c.category),
+                    datasets: [{
+                        label: 'Number of Tickets',
+                        data: categories.map(c => c.count),
+                        backgroundColor: '#054379',
+                        borderColor: '#043056',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Tickets by Category',
+                            font: { size: 16, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    } catch (err) {
+        console.error("Failed to load category chart:", err);
+    }
+}
+
+// ================= EXCEL EXPORT =================
+document.getElementById("exportBtn").addEventListener("click", async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const res = await fetch(`http://localhost:3000/tickets/${user.role}`);
+    const tickets = await res.json();
+    
+    if (tickets.length === 0) {
+        alert("No tickets to export");
+        return;
+    }
+    
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(tickets);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Tickets");
+    
+    // Generate filename with date
+    const today = new Date().toISOString().split('T')[0];
+    const filename = `Tickets_${user.role}_${today}.xlsx`;
+    
+    // Download
+    XLSX.writeFile(wb, filename);
+    
+    alert(`✅ Exported ${tickets.length} tickets to ${filename}`);
+});
+
+// Update DOMContentLoaded to include charts
+document.addEventListener("DOMContentLoaded", async () => {
+    loadFeedbackStats();
+    
+    const user = JSON.parse(localStorage.getItem("user"));
+    const res = await fetch(`http://localhost:3000/tickets/${user.role}`);
+    const tickets = await res.json();
+
+    const pending = tickets.filter(t => t.status === "PENDING");
+    const progress = tickets.filter(t => t.status === "IN_PROGRESS");
+    const resolved = tickets.filter(t => t.status === "RESOLVED");
+
+    document.getElementById("pendingCount").innerText = pending.length;
+    document.getElementById("progressCount").innerText = progress.length;
+    document.getElementById("resolvedCount").innerText = resolved.length;
+    document.getElementById("totalCount").innerText = tickets.length;
+
+    // Updated calls with type parameter
+    renderList("pendingList", pending, "pending");
+    renderList("progressList", progress, "progress");
+    renderList("resolvedList", resolved, "resolved");
+    
+    // Load charts after counts are set
+    loadCharts();  // ← ADD THIS
+});
+// Dark Mode Toggle
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    
+    // Update button text
+    const btn = document.querySelector('.dark-mode-toggle');
+    btn.innerHTML = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+}
+
+// Load dark mode preference on page load
+window.addEventListener('DOMContentLoaded', () => {
+    const isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
+        document.body.classList.add('dark-mode');
+        const btn = document.querySelector('.dark-mode-toggle');
+        if (btn) btn.innerHTML = '☀️ Light Mode';
+    }
+});
+</script>
+
+</html>
