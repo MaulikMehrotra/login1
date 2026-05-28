@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -306,14 +307,18 @@
             </div>
 
             <div class="col-md-12">
-            <label>Message to Pensioner <span class="text-muted" style="font-weight:normal;">(edit or clear as needed)</span></label>
-            <textarea class="form-control" rows="4" id="msg_text">We have received your complaint and our team is currently working on it. You will be notified once there is an update. Thank you for your patience.</textarea>
+                <label>Message</label>
+                <textarea class="form-control" rows="4" id="msg_text"></textarea>
             </div>
 
             <div class="col-md-12 text-end">
-            <button class="btn btn-primary" id="updateAndNotifyBtn">
-            ✅ Update Status & Notify
-            </button>
+                <button class="btn btn-primary" id="sendMessageBtn">
+                    Send Message
+                </button>
+
+                <button class="btn btn-warning ms-2" id="updateStatusBtn">
+                    Update Status
+                </button>
             </div>
 
         </div>
@@ -372,7 +377,27 @@ function hideLoading() {
 });
 
 
+// function renderList(elementId, tickets) {
 
+//     const container = document.getElementById(elementId);
+//     container.innerHTML = "";
+
+//     if (tickets.length === 0) {
+//         container.innerHTML = "<p>No tickets</p>";
+//         return;
+//     }
+
+//     tickets.forEach(t => {
+//         container.innerHTML += `
+//             <div class="list-group-item"
+//                  style="cursor:pointer"
+//                  onclick="loadTicket(${t.ticket_id})">
+//                 <strong>#${t.ticket_id}</strong> - ${t.category}
+//                 <span class="badge bg-secondary float-end">${t.status}</span>
+//             </div>
+//         `;
+//     });
+// }
 
 const ITEMS_PER_PAGE = 5;  // Show 5 tickets per page
 let currentPages = {
@@ -478,84 +503,69 @@ async function loadTicket(ticketId) {
     document.getElementById("user_message").innerText = data.description;
 }
 
-document.getElementById("updateAndNotifyBtn").addEventListener("click", async () => {
+document.getElementById("sendMessageBtn").addEventListener("click", async () => {
 
     const pensioncode = document.getElementById("msg_pensioncode").value;
     const ticket_id = document.getElementById("msg_token").value;
-    const status = document.getElementById("new_status").value;
-    const message = document.getElementById("msg_text").value.trim();
-
-    // Validation
+    const message = document.getElementById("msg_text").value;
     if (!ticket_id) {
-        alert("Please select a ticket first");
+        alert("Select a ticket first");
+        return;
+    }
+    if (!message) {
+        alert("Enter message");
+        return;
+    }
+     // Confirmation
+    if (!confirm("Send this message to the user?")) {
+        return;
+    }
+
+    showLoading("Sending message...");
+    const res = await fetch("http://localhost:3000/messages", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ pensioncode, ticket_id, message })
+    });
+
+    const data = await res.json();
+
+    hideLoading();
+    alert(data.message);
+    document.getElementById("msg_text").value = "";
+});
+document.getElementById("updateStatusBtn").addEventListener("click", async () => {
+    const ticket_id = document.getElementById("msg_token").value;
+    const status = document.getElementById("new_status").value;
+
+    if (!ticket_id) {
+        alert("Select a ticket first");
         return;
     }
 
     if (!status) {
-        alert("Please select a status to update");
+        alert("Select status");
         return;
     }
 
-    // Build confirmation message
-    const confirmText = message
-        ? `Update Ticket #${ticket_id} to "${status}" and send message to pensioner?`
-        : `Update Ticket #${ticket_id} to "${status}"? (No message will be sent)`;
-
-    if (!confirm(confirmText)) {
+    // Confirmation Dialog
+    if (!confirm(`Are you sure you want to update Ticket #${ticket_id} to ${status}?`)) {
         return;
     }
 
-    showLoading("Updating ticket...");
+    showLoading("Updating status...");
 
-    try {
-        // STEP 1: Always update status
-        const statusRes = await fetch(`http://localhost:3000/tickets/${ticket_id}/status`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status })
-        });
+    const res = await fetch(`http://localhost:3000/tickets/${ticket_id}/status`, {
+        method: "PUT",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ status })
+    });
 
-        const statusData = await statusRes.json();
+    const data = await res.json();
 
-        if (!statusRes.ok) {
-            hideLoading();
-            alert("Status update failed: " + statusData.message);
-            return;
-        }
-
-        // STEP 2: Send message only if officer typed one
-        if (message) {
-            const msgRes = await fetch("http://localhost:3000/messages", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pensioncode, ticket_id, message })
-            });
-
-            const msgData = await msgRes.json();
-
-            hideLoading();
-
-            if (!msgRes.ok) {
-                // Status updated but message failed
-                alert(`✅ Status updated to ${status}\n⚠️ Message could not be sent: ${msgData.message}`);
-            } else {
-                alert(`✅ Status updated to ${status}\n✅ Message sent to pensioner`);
-            }
-
-        } else {
-            // No message, just status update
-            hideLoading();
-            alert(`✅ Status updated to ${status}`);
-        }
-
-        document.getElementById("msg_text").value = "";
-        location.reload();
-
-    } catch (err) {
-        hideLoading();
-        console.error(err);
-        alert("Server error. Please try again.");
-    }
+    hideLoading();
+    alert(data.message);
+    location.reload();
 });
 async function loadFeedbackStats() {
 
@@ -729,4 +739,5 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
 </html>

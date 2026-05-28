@@ -274,43 +274,7 @@ app.post('/register', async (req, res) => {
     });
 });
 
-// ================= CREATE TICKET =================
-// app.post('/tickets', (req, res) => {
-//     const {
-//         pensioncode,
-//         category,
-//         assigned_to,
-//         description
-//     } = req.body;
 
-//     if (!pensioncode || !description) {
-//         return res.status(400).json({ message: "Missing required fields" });
-//     }
-
-//     const sql = `
-//         INSERT INTO tickets
-//         (pensioncode, category, assigned_to, description)
-//         VALUES (?, ?, ?, ?)
-//     `;
-
-//     tickets.query(sql, [
-//         pensioncode,
-//         category,
-//         assigned_to,
-//         description
-//     ], (err, result) => {
-
-//         if (err) {
-//             console.error("❌ Ticket insert error:", err);
-//             return res.status(500).json({ message: "Ticket creation failed" });
-//         }
-
-//         res.json({
-//             message: "Ticket created successfully",
-//             ticket_id: result.insertId
-//         });
-//     });
-// });
 app.post('/tickets', (req, res) => {
     const {
         pensioncode,
@@ -443,7 +407,6 @@ app.get("/user-tickets/:pensioncode", (req, res) => {
 
 
 // SAVE MESSAGE
-// SAVE MESSAGE
 app.post("/messages", (req, res) => {
 
     const { pensioncode, ticket_id, message } = req.body;
@@ -460,7 +423,7 @@ app.post("/messages", (req, res) => {
             return res.status(500).json({ message: "Message failed" });
         }
 
-        // NEW: Get user email and send notification
+        // Get user email and send notification
         const userSql = `SELECT email, employee_name FROM employee WHERE pensioncode = ?`;
         
         db.query(userSql, [pensioncode], async (err, rows) => {
@@ -472,13 +435,13 @@ app.post("/messages", (req, res) => {
                 // Send email notification
                 try {
                     await transporter.sendMail({
-                        from: '"Jal Vihar Pension System" <yourgmail@gmail.com>',
+                        from: `"Pension Grievance Redressal System" <${process.env.EMAIL_USER}>`,
                         to: userEmail,
                         subject: `Update on Your Ticket #${ticket_id}`,
                         html: `
                             <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
                                 <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 10px;">
-                                    <h2 style="color: #054379;">💧 Jal Vihar - Ticket Update</h2>
+                                    <h2 style="color: #054379;">Pension Grievance Redressal System - Ticket Update</h2>
                                     <p>Dear <strong>${userName}</strong>,</p>
                                     <p>There's a new update on your ticket <strong>#${ticket_id}</strong>:</p>
                                     <div style="background-color: #e8f4ff; padding: 15px; border-left: 4px solid #054379; margin: 20px 0;">
@@ -486,7 +449,7 @@ app.post("/messages", (req, res) => {
                                     </div>
                                     <p>Please login to your account to view full details and respond if needed.</p>
                                     <p style="margin-top: 30px; color: #666; font-size: 12px;">
-                                        This is an automated message from Jal Vihar Pension Grievance System.
+                                        This is an automated message from Pension Grievance Redressal System.
                                     </p>
                                 </div>
                             </div>

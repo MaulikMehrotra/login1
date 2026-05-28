@@ -108,17 +108,31 @@
                 <!-- JOB INFO -->
                 <div class="col-md-4">
                     <label>Payroll Type</label>
-                    <input type="text" id="payroll_type" class="form-control">
-                </div>
+                        <select id="payroll_type" class="form-select">
+                            <option value="">Select Payroll Type</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Contractual">Contractual</option>
+                            <option value="Temporary">Temporary</option>
+                            <option value="Deputation">Deputation</option>
+                            <option value="Daily Wage">Daily Wage</option>
+                        </select>
+                    </div>
 
                 <div class="col-md-4">
                     <label>Category</label>
-                    <input type="text" id="category" class="form-control">
+                    <select id="category" class="form-select">
+                        <option value="">Select Category</option>
+                        <option value="General">General</option>
+                        <option value="OBC">OBC</option>
+                        <option value="SC">SC</option>
+                        <option value="ST">ST</option>
+                        <option value="EWS">EWS</option>
+                    </select>
                 </div>
 
                 <div class="col-md-4">
                     <label>Designation ID</label>
-                    <input type="number" id="designation_id" class="form-control">
+                    <input type="text" id="designation_id" class="form-control">
                 </div>
 
                 <div class="col-md-4">
