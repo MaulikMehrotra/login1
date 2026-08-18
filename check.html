@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-// ✅ ADD THIS OUTSIDE (VERY IMPORTANT)
+
 async function loadTicket(ticketId) {
 
     const res = await fetch(`http://localhost:3000/ticket-status/${ticketId}`);
@@ -176,7 +176,7 @@ async function loadTicket(ticketId) {
 
     document.getElementById("resultBox").style.display = "block";
 
-    // NEW: Load messages for this ticket
+    // Load messages for this ticket
     try {
         const msgRes = await fetch(`http://localhost:3000/messages/${ticketId}`);
         const messages = await msgRes.json();

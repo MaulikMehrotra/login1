@@ -9,7 +9,7 @@ async function hashExistingPasswords() {
         database: 'authenticate'
     });
 
-    // Passwords from your screenshot
+    
     const users = [
         { id: 4, password: 'admin123' },
         { id: 5, password: 'maulik123' },

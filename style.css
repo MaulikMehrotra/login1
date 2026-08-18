@@ -41,12 +41,12 @@ body{
     background-color: #bbdefb !important;
 }
 .form-label:focus{
-    background-color: #e8f4ff;   /* light blue */
-    border-color: #0d6efd;       /* Bootstrap primary */
-    outline: none;               /* remove ugly default */
+    background-color: #e8f4ff;  
+    border-color: #0d6efd;       
+    outline: none;               
     box-shadow: none;
 }
-/* Style all form inputs */
+/* Style for all form inputs */
 .form-control, .form-select {
     background-color: #f8f9fa;
     border: 2px solid #e0e0e0;
@@ -148,7 +148,7 @@ input, select {
 
 
 
-/* ================= LOADING SPINNER ================= */
+/* LOADING SPINNER  */
 .loading-overlay {
     position: fixed;
     top: 0;
@@ -183,7 +183,7 @@ input, select {
     font-size: 18px;
     font-weight: 600;
 }
-/* ================= DARK MODE ================= */
+/* DARK MODE */
 body.dark-mode {
     background: linear-gradient(90deg, #1a1a2e, #16213e) !important;
     color: #e0e0e0;

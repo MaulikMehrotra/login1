@@ -9,7 +9,7 @@ const sentiment = new Sentiment();
 const bcrypt = require('bcrypt');
 const app = express();
 const path = require("path");
-const { body, validationResult } = require('express-validator');  // ← ADD THIS
+const { body, validationResult } = require('express-validator');  
 app.use(express.static(path.join(__dirname)));
 app.use(cors());
 app.use(express.json());
@@ -75,7 +75,7 @@ app.post('/login', async (req, res) => {
         return res.status(500).json({ message: "CAPTCHA error" });
     }
 
-    // NEW: Get user with password included
+    
     const sql = `
         SELECT pensioncode, employee_name, role, password
         FROM employee
@@ -93,7 +93,7 @@ app.post('/login', async (req, res) => {
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        // NEW: Compare hashed password
+        // Compare hashed password
         try {
             const validPassword = await bcrypt.compare(password, rows[0].password);
             
@@ -120,7 +120,7 @@ app.post('/login', async (req, res) => {
     });
 });
 
-// ================= GET USER DETAILS =================
+//GET USER DETAILS
 app.get('/user/:pensioncode', (req, res) => {
     const { pensioncode } = req.params;
 
@@ -145,7 +145,7 @@ app.get('/user/:pensioncode', (req, res) => {
     });
 });
 
-// ================= SAVE FEEDBACK =================
+// SAVE FEEDBACK 
 app.post('/feedback', (req, res) => {
 
     const { pensioncode, token, message } = req.body;
@@ -154,7 +154,7 @@ app.post('/feedback', (req, res) => {
         return res.status(400).json({ message: "Missing fields" });
     }
 
-    // 🔥 SENTIMENT ANALYSIS
+    // SENTIMENT ANALYSIS
     const result = sentiment.analyze(message);
 
     let sentimentLabel = "NEUTRAL";
@@ -176,7 +176,7 @@ app.post('/feedback', (req, res) => {
 
         res.json({
             message: "Feedback submitted",
-            sentiment: sentimentLabel   // 👈 return to frontend
+            sentiment: sentimentLabel   //  return to frontend
         });
     });
 });
@@ -199,7 +199,7 @@ app.get("/feedback-stats", (req, res) => {
     });
 });
 
-// ================= REGISTER ================= 
+//REGISTER  SCRIPT
 app.post('/register', async (req, res) => {
     const {
         pensioncode,
@@ -247,7 +247,7 @@ app.post('/register', async (req, res) => {
         db.query(insertSql, [
             pensioncode,
             employee_name,
-            hashedPassword,  // ← Use hashed password
+            hashedPassword,  
             payroll_type,
             category,
             designation_id,
@@ -356,7 +356,7 @@ app.get('/ticket/:id', (req, res) => {
 
 
 
-// ================= CHECK TICKET STATUS =================
+//CHECK TICKET STATUS 
 app.get('/ticket-status/:id', (req, res) => {
 
     const ticketId = req.params.id;

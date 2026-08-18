@@ -6,8 +6,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <!-- ADD THIS -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>  <!-- ADD THIS FOR EXCEL -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <!--used for charts  -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script> <!--used for excel export -->
      <style>
         body {
             background-color: #054379;
@@ -574,7 +574,7 @@ async function loadFeedbackStats() {
     document.getElementById("neutralCount").innerText = neutral;
     document.getElementById("negativeCount").innerText = negative;
 }
-// ================= CHARTS =================
+// CHARTS
 async function loadCharts() {
     // Status Pie Chart
     const statusCtx = document.getElementById('statusChart').getContext('2d');
@@ -657,7 +657,7 @@ async function loadCharts() {
     }
 }
 
-// ================= EXCEL EXPORT =================
+// EXCEL EXPORT 
 document.getElementById("exportBtn").addEventListener("click", async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const res = await fetch(`http://localhost:3000/tickets/${user.role}`);
@@ -706,7 +706,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderList("resolvedList", resolved, "resolved");
     
     // Load charts after counts are set
-    loadCharts();  // ← ADD THIS
+    loadCharts();  
 });
 // Dark Mode Toggle
 function toggleDarkMode() {
